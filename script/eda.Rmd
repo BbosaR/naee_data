@@ -1,0 +1,191 @@
+---
+title: "Untitled"
+author: "BBosa Robert"
+output:
+  html_document:
+    df_print: paged
+always_allow_html: yes
+---
+
+# Load required packages
+```{r eval=FALSE}
+install.packages("ggrepel")
+install.packages("fBasics")
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("vtable")
+```
+
+# Call the libraries
+```{r}
+library(ggplot2)
+library(ggrepel)
+library(fBasics)
+library(dplyr)
+library(vtable)
+```
+
+# LOad the Data Set
+
+```{r}
+naeedata1 <- read.csv("~/NAEE_Data/naee_data/data/data1.csv", 
+                header = TRUE,
+                check.names = FALSE)
+
+naeedata1 <- naeedata1[1:336,1:24]
+
+View(naeedata1)
+names(naeedata1)
+```
+
+# Rename variables
+
+```{r}
+colnames(naeedata1)[2:24] <- c("year",
+                               "in_tre",
+                               "in_hyd",
+                               "in_wind",
+                               "in_solar",
+                               "in_bio",
+                               "in_geo",
+                               "exp",
+                               "imp",
+                               "cons",
+                               "tgen",
+                               "gen_foss",
+                               "gen_nuc",
+                               "gen_ren",
+                               "gen_hyd",
+                               "gen_solar",
+                               "gen_bio",
+                               "gen_geo",
+                               "access",
+                               "acc_urban",
+                               "acc_rural",
+                               "perk_gen",
+                               "perk_cons")
+                               
+names(naeedata1)
+```
+
+
+
+```{r}
+round(fBasics::basicStats(naeedata1[,-c(1:2)]),2)
+?tibble
+st(tibble(naeedata1))
+```
+
+```{r}
+naeedata1 %>% 
+  filter(year == "2013") %>%
+  ggplot(aes(x = in_tre, y = tgen)) +
+  geom_point()+
+  geom_text(aes(label = Country), size = 4)+
+  labs(title = "2013",
+    x="Electricity installed capacity in Total renewable energy (MW)",
+    y="Electricity generation, Total (GWh)")
+```
+
+
+```{r}
+ naeedata1 %>% 
+  filter(year == "2020") %>%
+  ggplot(aes(x = in_tre, y = tgen)) +
+  geom_point()+
+  geom_text(aes(label = Country), size = 4)+
+  labs(title = "2020",
+    x="Electricity installed capacity in Total renewable energy (MW)",
+    y="Electricity generation, Total (GWh)")
+```
+
+
+```{r}
+ naeedata1 %>% 
+  filter(year == "2013") %>%
+  mutate(ln_intre=log(in_tre)) %>% 
+  mutate(ln_tgen=log(tgen)) %>% 
+  ggplot(aes(x = ln_intre, y = ln_tgen)) +
+  geom_point()+
+  geom_text(aes(label = Country), size = 4)+
+  labs(title = "2013",
+    x="Electricity installed capacity in Total renewable energy (ln(MW))",
+    y="Electricity generation, Total (ln(GWh)")
+```
+
+
+
+```{r}
+ naeedata1 %>% 
+  filter(year == "2020") %>%
+  mutate(ln_intre=log(in_tre)) %>% 
+  mutate(ln_tgen=log(tgen)) %>% 
+  ggplot(aes(x = ln_intre, y = ln_tgen)) +
+  geom_point()+
+  geom_text(aes(label = Country), size = 4)+
+  labs(title = "2020",
+    x="Electricity installed capacity in Total renewable energy (ln(MW))",
+    y="Electricity generation, Total (ln(GWh)")
+
+```
+
+
+
+```{r}
+naeedata1 %>% 
+  filter(year == "2013") %>% 
+   mutate(ln_intre=log(in_tre)) %>% 
+  mutate(ln_tgen=log(tgen)) %>% 
+  ggplot(aes(x = ln_intre, y = ln_tgen)) +
+  geom_point()+
+  geom_label_repel(aes(label = Country), size = 4,  max.overlaps = Inf)+
+  labs(title = "2013",
+    x="Electricity installed capacity in Total renewable energy (ln(MW))",
+    y="Electricity generation, Total (ln(GWh)")
+```
+
+
+```{r}
+naeedata1 %>% 
+  filter(year == "2020") %>% 
+   mutate(ln_intre=log(in_tre)) %>% 
+  mutate(ln_tgen=log(tgen)) %>% 
+  ggplot(aes(x = ln_intre, y = ln_tgen)) +
+  geom_point()+
+  geom_label_repel(aes(label = Country), size = 4,  max.overlaps = Inf)+
+  labs(title = "2020",
+    x="Electricity installed capacity in Total renewable energy (ln(MW))",
+    y="Electricity generation, Total (ln(GWh)")
+```
+
+
+
+```{r}
+
+naeedata1 %>% 
+  filter(year == "2013") %>% 
+   mutate(ln_intre=log(in_tre)) %>% 
+  mutate(ln_tgen=log(tgen)) %>% 
+  ggplot(aes(x = ln_intre, y = ln_tgen)) +
+  geom_point() +
+  geom_text_repel(aes(label = Country), size = 3,  max.overlaps = Inf)+
+  labs(title = "2013",
+    x="Electricity installed capacity in Total renewable energy (ln(MW))",
+    y="Electricity generation, Total (ln(GWh)")
+```
+
+
+```{r}
+naeedata1 %>% 
+  filter(year == "2020") %>% 
+  mutate(ln_intre=log(in_tre)) %>% 
+  mutate(ln_tgen=log(tgen)) %>% 
+  ggplot(aes(x = ln_intre, y = ln_tgen, col = Country)) +
+  geom_point(aes(color= Country)) +
+  geom_label_repel(aes(label = Country), size = 3,  max.overlaps = Inf)+
+  labs(title = "2020",
+    x="Electricity installed capacity in Total renewable energy (ln(MW))",
+    y="Electricity generation, Total (ln(GWh)") +
+  scale_color_discrete() +
+  theme(legend.position = "none")
+```
